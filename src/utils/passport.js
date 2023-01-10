@@ -30,8 +30,8 @@ passport.use(
       try {
         const cA = await passengerModel.select(columns, clause);
         if (!cA.rowCount) {
-          const columns = `"first_name", "last_name", "phone_number", "password", "email", "profile_pic"`;
-          const values = `'${firstName}', '${lastName}', '08024002365', 'shuk1111', '${email}', '${profilePic}'`;
+          const columns = `"first_name", "last_name", "email", "profile_pic"`;
+          const values = `'${firstName}', '${lastName}', '${email}', '${profilePic}'`;
           const addUser = passengerModel.insertWithReturn(columns, values);
         }
         const user = {

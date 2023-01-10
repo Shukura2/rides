@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS passenger (
     passenger_id UUID NOT NULL DEFAULT uuid_generate_v4(),
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    phone_number VARCHAR(50) NOT NULL,
-    password VARCHAR(250) NOT NULL,
+    phone_number VARCHAR(50),
+    password VARCHAR(250),
     email VARCHAR(100) NOT NULL,
     profile_pic VARCHAR(150),
     PRIMARY KEY (passenger_id)

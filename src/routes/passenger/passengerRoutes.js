@@ -48,12 +48,12 @@ passengerRouter.get(
 passengerRouter.get(
   '/google/callback',
   passport.authenticate('google', {
-    successRedirect: '/v1/auth/passenger/protected',
+    successRedirect: '/v1/auth/passenger/success',
     failureRedirect: '/v1/auth/passenger/failure',
   })
 );
 
-passengerRouter.get('/protected', (req, res) => {
+passengerRouter.get('/success', (req, res) => {
   res.status(200).json({
     message: 'this is a protected route',
     user: req.user,
