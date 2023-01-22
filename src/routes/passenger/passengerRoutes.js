@@ -9,11 +9,13 @@ import {
   updatePassword,
   joinRide,
   uploadPassengerImage,
+  addPhoneNumber,
 } from '../../controllers';
 import {
   validateSignup,
   validateExistingPassenger,
   isLoggedIn,
+  validatePhoneNumber,
 } from '../../middlewares';
 
 const passengerRouter = express.Router();
@@ -30,6 +32,12 @@ passengerRouter.post(
   createPassenger
 );
 passengerRouter.post('/login', loginPassenger);
+passengerRouter.put(
+  '/telephone',
+  isLoggedIn,
+  validatePhoneNumber,
+  addPhoneNumber
+);
 passengerRouter.put('/edit-profile', isLoggedIn, editProfile);
 passengerRouter.post('/reset-password', resetPassword);
 passengerRouter.put('/update-password', updatePassword);
