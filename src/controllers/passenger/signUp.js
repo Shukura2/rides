@@ -11,16 +11,23 @@ export const passengerModel = new Model('passenger');
 const SALTROUND = 10;
 
 export const createPassenger = async (req, res) => {
-  const { firstName, lastName, phoneNumber, password, email } = req.body;
-  const columns = `"first_name", "last_name", "phone_number", "password", "email"`;
-  const values = `'${firstName}', '${lastName}', '${phoneNumber}', '${password}', '${email}'`;
+  const { firstName, lastName, email, password } = req.body;
+  const columns = `"first_name", "last_name", "email", "password"`;
+  const values = `'${firstName}', '${lastName}', '${email}', '${password}'`;
 
   try {
     const data = await passengerModel.insertWithReturn(columns, values);
     const { passenger_id: passengerId } = data.rows[0];
     const userInfo = { passengerId, firstName, lastName, email };
     const token = assignToken(userInfo);
-    res.status(200).json({ message: userInfo, token, success: true });
+    res
+      .status(200)
+      .json({
+        message: 'Register successfully',
+        userInfo,
+        token,
+        success: true,
+      });
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }

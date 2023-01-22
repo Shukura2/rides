@@ -8,16 +8,23 @@ export const driverModel = new Model('driver');
 const SALTROUND = 10;
 
 export const createDriver = async (req, res) => {
-  const { firstName, lastName, phoneNumber, password, email } = req.body;
-  const columns = `first_name, last_name, phone_number, password, email`;
-  const values = `'${firstName}', '${lastName}', '${phoneNumber}', '${password}', '${email}'`;
+  const { firstName, lastName, password, email } = req.body;
+  const columns = `first_name, last_name, password, email`;
+  const values = `'${firstName}', '${lastName}', '${password}', '${email}'`;
 
   try {
     const data = await driverModel.insertWithReturn(columns, values);
     const { driver_id: driverId } = data.rows[0];
     const userInfo = { driverId, firstName, lastName, email };
     const token = assignToken(userInfo);
-    res.status(200).json({ message: userInfo, token, success: true });
+    res
+      .status(200)
+      .json({
+        message: 'Register successfully',
+        userInfo,
+        token,
+        success: true,
+      });
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }

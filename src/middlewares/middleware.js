@@ -5,11 +5,10 @@ import { passengerModel, driverModel } from '../controllers';
 
 export const validateSignup = async (req, res, next) => {
   const schema = Joi.object({
-    firstName: Joi.string().min(3).max(30).required(),
-    lastName: Joi.string().min(3).max(30).required(),
-    phoneNumber: Joi.string().length(11).required(),
-    password: Joi.string().alphanum().min(6).max(12).required(),
+    firstName: Joi.string().min(3).max(25).required(),
+    lastName: Joi.string().min(3).max(25).required(),
     email: Joi.string().email().required(),
+    password: Joi.string().alphanum().min(6).max(12).required(),
   });
 
   try {
