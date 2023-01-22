@@ -93,3 +93,21 @@ export const updatePassword = async (req, res) => {
     });
   }
 };
+
+export const addPhoneNumber = async (req, res) => {
+  const data = req.body;
+
+  const newData = {};
+
+  if (data.phoneNumber) {
+    newData['phone_number'] = data.phoneNumber;
+  }
+  const { passengerId } = req.user.userInfo;
+  const clause = `WHERE passenger_id = '${passengerId}'`;
+  try {
+    const addPhoneNumber = await passengerModel.editFromTable(newData, clause);
+    res.status(200).json({ message: 'Phone number added successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};

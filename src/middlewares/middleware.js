@@ -86,3 +86,16 @@ export const isLoggedIn = async (req, res, next) => {
     });
   }
 };
+
+export const validatePhoneNumber = async (req, res, next) => {
+  const schema = Joi.object({
+    phoneNumber: Joi.string().length(11).required(),
+  });
+
+  try {
+    const value = await schema.validateAsync(req.body);
+    return next();
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
