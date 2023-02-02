@@ -1,41 +1,19 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import Model from '../../models/model';
-import assignToken from '../../utils/assignToken';
-import sendEmail from '../../utils/sendMail';
+import dotenv from 'dotenv';
+import { userModel } from './auth/userAuth';
+import assignToken from '../utils/assignToken';
+import sendEmail from '../utils/sendMail';
 
-export const driverModel = new Model('driver');
+dotenv.config();
 const SALTROUND = 10;
 
-export const createDriver = async (req, res) => {
-  const { firstName, lastName, password, email } = req.body;
-  const columns = `first_name, last_name, password, email`;
-  const values = `'${firstName}', '${lastName}', '${password}', '${email}'`;
-
-  try {
-    const data = await driverModel.insertWithReturn(columns, values);
-    const { driver_id: driverId } = data.rows[0];
-    const userInfo = { driverId, firstName, lastName, email };
-    const token = assignToken(userInfo);
-    res
-      .status(200)
-      .json({
-        message: 'Register successfully',
-        userInfo,
-        token,
-        success: true,
-      });
-  } catch (error) {
-    res.status(500).json({ message: error.message, success: false });
-  }
-};
-
-export const resetDriverPassword = async (req, res) => {
+export const resetPassword = async (req, res) => {
   const title = 'Reset Password';
   const FRONTEND_URL = process.env.FRONTEND_URL;
   try {
     const { email } = req.body;
-    const validateEmail = await driverModel.select(
+    const validateEmail = await userModel.select(
       '*',
       `WHERE email = '${email}'`
     );
@@ -46,8 +24,8 @@ export const resetDriverPassword = async (req, res) => {
         success: false,
       });
     }
-    const { driver_id: driverId } = validateEmail.rows[0];
-    const userInfo = { driverId };
+    const { user_details_id: userId } = validateEmail.rows[0];
+    const userInfo = { userId };
     const token = assignToken(userInfo);
     const verify = `${FRONTEND_URL}/password/update?token=${token}`;
     const content = `Hi, please click on the link to proceed with the reset password <a href="${verify}">Reset password</a> `;
@@ -62,7 +40,7 @@ export const resetDriverPassword = async (req, res) => {
   }
 };
 
-export const updateDriverPassword = async (req, res) => {
+export const updatePassword = async (req, res) => {
   const { token, password } = req.body;
   let userData;
   if (!token) {
@@ -73,10 +51,10 @@ export const updateDriverPassword = async (req, res) => {
   }
   try {
     userData = jwt.verify(token, process.env.SECRET_KEY);
-    const { driverId } = userData.userInfo;
+    const { userId } = userData.userInfo;
     const hashPassword = await bcrypt.hash(password, SALTROUND);
-    const clause = `WHERE driver_id = '${driverId}'`;
-    const data = await driverModel.editFromTable(
+    const clause = `WHERE user_details_id = '${userId}'`;
+    const data = await userModel.editFromTable(
       { password: hashPassword },
       clause
     );

@@ -1,8 +1,6 @@
-import Model from '../../models/model';
+import { userModel } from './auth/userAuth';
 
-export const editprofileModel = new Model('driver');
-
-export const editDriverProfile = async (req, res) => {
+export const editUserProfile = async (req, res) => {
   const data = req.body;
   const newData = {};
   if (data.firstName) {
@@ -11,10 +9,10 @@ export const editDriverProfile = async (req, res) => {
   if (data.lastName) {
     newData['last_name'] = data.lastName;
   }
-  const { driverId } = req.user.userInfo;
-  const clause = `WHERE driver_id = '${driverId}'`;
+  const { userId } = req.user.userInfo;
+  const clause = `WHERE user_details_id = '${userId}'`;
   try {
-    const dataInfo = await editprofileModel.editFromTable(newData, clause);
+    const dataInfo = await userModel.editFromTable(newData, clause);
     res
       .status(200)
       .json({ message: 'Profile successfully updated', success: true });

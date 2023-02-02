@@ -1,33 +1,79 @@
 import Model from '../../models/model';
+import { userModel } from '../auth/userAuth';
 
 const rideOfferModel = new Model('ride_offer');
 const rideHistoryModel = new Model('ride_history');
 
 export const joinRide = async (req, res) => {
-  const { offerId } = req.params;
-  const { passengerId } = req.user.userInfo;
-  const column = '*';
-  const clause = `WHERE ride_offer_id = '${offerId}'`;
   try {
-    const data = await rideOfferModel.select(column, clause);
+    const { userId: passengerId } = req.user.userInfo;
+    const { offerId } = req.params;
+    const columns = `first_name, last_name, phone_number, profile_pic`;
+    const clause = `WHERE user_details_id = '${passengerId}'`;
+    const data = await userModel.select(columns, clause);
     const {
-      ride_offer_id: rideId,
-      driver_id: driverId,
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber,
+      profile_pic: profilePic,
+    } = data.rows[0];
+
+    const joinRide = {
+      passenger_id: passengerId,
+      status: 'start trip',
+      passenger_first_name: firstName,
+      passenger_last_name: lastName,
+      passenger_phone_number: phoneNumber,
+      passenger_profile_pic: profilePic,
+    };
+    const rideId = `WHERE ride_offer_id = '${offerId}'`;
+    const dataInfo = await rideOfferModel.editFromTable(joinRide, rideId);
+
+    const driverDetailsColumn = `passenger_id, driver_first_name, driver_last_name, ride_offer_id, amount, location, destination, created_at`;
+    const driverDetailsClause = `WHERE ride_offer_id = '${offerId}'`;
+    const getDriverDetails = await rideOfferModel.select(
+      driverDetailsColumn,
+      driverDetailsClause
+    );
+
+    const {
+      driver_first_name: driverFirstName,
+      driver_last_name: driverLastName,
+      ride_offer_id: rideOfferId,
       amount,
       location,
       destination,
       created_at: createdAt,
-    } = data.rows[0];
+    } = getDriverDetails.rows[0];
 
-    const columns = `"driver_id", "passenger_id", "ride_offer_id", "amount", "location", "destination", "status"`;
-    const values = `'${driverId}', '${passengerId}', '${rideId}', '${amount}', '${location}', '${destination}', 'Start trip'`;
-    const rideHistoryData = await rideHistoryModel.insertWithReturn(
-      columns,
-      values
+    const historyColumns = `passenger_id, driver_first_name, driver_last_name, ride_offer_id, amount, location, destination, created_at`;
+    const historyValues = `'${passengerId}', '${driverFirstName}', '${driverLastName}', '${rideOfferId}', '${amount}', '${location}', '${destination}', '${createdAt}'`;
+
+    const historyData = await rideHistoryModel.insertWithReturn(
+      historyColumns,
+      historyValues
     );
-    return res
-      .status(200)
-      .json({ message: 'Ride join successfully', success: true });
+    return res.status(200).json({ message: 'Enjoy your ride!', success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+export const getJoinRide = async (req, res) => {
+  try {
+    const { userId: driverId } = req.user.userInfo;
+    const { offerId } = req.params;
+    const column = `passenger_id, passenger_first_name, passenger_last_name, passenger_phone_number, passenger_profile_pic`;
+    const clause = `WHERE ride_offer_id = '${offerId}' AND driver_id = '${driverId}'`;
+    const data = await rideOfferModel.select(column, clause);
+    const {
+      passenger_first_name: firstName,
+      passenger_last_name: lastName,
+      passenger_phone_number: phoneNumber,
+      passenger_profile_pic: profilePic,
+    } = data.rows[0];
+    const passengerData = { firstName, lastName, phoneNumber, profilePic };
+    return res.status(200).json({ message: passengerData, success: true });
   } catch (error) {
     return res.status(500).json({ message: error.message, success: false });
   }
