@@ -1,7 +1,7 @@
 const cloudinary = require('cloudinary').v2;
+import dotenv from 'dotenv';
 import path from 'path';
 import DataURIParser from 'datauri/parser';
-import dotenv from 'dotenv';
 
 dotenv.config();
 

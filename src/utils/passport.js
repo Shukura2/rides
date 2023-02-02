@@ -1,8 +1,7 @@
 import passport from 'passport';
 import dotenv from 'dotenv';
-import Model from '../models/model';
-
-const passengerModel = new Model('passenger');
+import { userModel, userTypes } from '../controllers';
+import assignToken from './assignToken';
 
 dotenv.config();
 
@@ -16,28 +15,41 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
-      const {
-        id: passengerId,
-        given_name: firstName,
-        family_name: lastName,
-        picture: profilePic,
-        email: email,
-      } = profile;
-
-      const user = { passengerId, firstName, lastName, profilePic, email };
-      const columns = `*`;
-      const clause = `WHERE email='${email}'`;
       try {
-        const cA = await passengerModel.select(columns, clause);
-        if (!cA.rowCount) {
-          const columns = `"first_name", "last_name", "email", "profile_pic"`;
-          const values = `'${firstName}', '${lastName}', '${email}', '${profilePic}'`;
-          const addUser = passengerModel.insertWithReturn(columns, values);
+        const {
+          given_name: firstName,
+          family_name: lastName,
+          picture: profilePic,
+          email,
+        } = profile;
+
+        const columns = `*`;
+        const clause = `WHERE email='${email}'`;
+        let userType = userTypes.PASSENGER;
+        let userInfo;
+
+        const currentUser = await userModel.select(columns, clause);
+        if (!currentUser.rowCount) {
+          const columns = `first_name, last_name, email, user_type, profile_pic`;
+          const values = `'${firstName}', '${lastName}', '${email}', '${userType}', '${profilePic}'`;
+          const addUser = await userModel.insertWithReturn(columns, values);
+          userInfo = {
+            firstName,
+            lastName,
+            email,
+            profilePic,
+            userType,
+          };
+        } else {
+          userInfo = {
+            firstName: currentUser.rows[0].first_name,
+            lastName: currentUser.rows[0].last_name,
+            email: currentUser.rows[0].email,
+            profilePic: currentUser.rows[0].profile_pic,
+            userType: currentUser.rows[0].user_type,
+          };
         }
-        const user = {
-          email: email,
-        };
-        done(null, user);
+        done(null, userInfo);
       } catch (error) {
         done(error);
       }
@@ -45,10 +57,10 @@ passport.use(
   )
 );
 
-passport.serializeUser(function (user, done) {
-  done(null, user);
+passport.serializeUser(function (userInfo, done) {
+  done(null, userInfo);
 });
 
-passport.deserializeUser(function (user, done) {
-  done(null, user);
+passport.deserializeUser(function (userInfo, done) {
+  done(null, userInfo);
 });

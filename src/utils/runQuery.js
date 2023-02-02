@@ -1,15 +1,7 @@
-import {
-  createTablesPassenger,
-  dropTables,
-  createOfferTable,
-  createTableDriver,
-  createRideHistoryTable,
-} from './queryFunction';
+import { dropTables, createUsersTable, createTable } from './queryFunction';
 
 (async () => {
   await dropTables;
-  await createTablesPassenger();
-  await createTableDriver();
-  await createOfferTable();
-  await createRideHistoryTable();
+  await createUsersTable();
+  await createTable();
 })();

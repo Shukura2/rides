@@ -2,11 +2,9 @@ import { pool } from '../models/pool';
 import {
   dropRideHistoryTable,
   dropOfferTable,
-  dropPassengerTable,
-  dropDriverTable,
+  dropUserTable,
   createRideOffer,
-  createPassengerTable,
-  createDriverTable,
+  createUserTable,
   createRideHistory,
 } from './queries';
 
@@ -20,15 +18,8 @@ export const executeQueryArray = async (arr) =>
   });
 
 export const dropTables = () =>
-  executeQueryArray([
-    dropDriverTable,
-    dropPassengerTable,
-    dropOfferTable,
-    dropRideHistoryTable,
-  ]);
-export const createTableDriver = () => executeQueryArray([createDriverTable]);
-export const createTablesPassenger = () =>
-  executeQueryArray([createPassengerTable]);
-export const createOfferTable = () => executeQueryArray([createRideOffer]);
-export const createRideHistoryTable = () =>
-  executeQueryArray([createRideHistory]);
+  executeQueryArray([dropUserTable, dropOfferTable, dropRideHistoryTable]);
+
+export const createUsersTable = () => executeQueryArray([createUserTable]);
+export const createTable = () =>
+  executeQueryArray([createRideOffer, createRideHistory]);

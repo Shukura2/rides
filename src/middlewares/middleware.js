@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { passengerModel, driverModel } from '../controllers';
+import { userModel } from '../controllers/auth/userAuth';
 
 export const validateSignup = async (req, res, next) => {
   const schema = Joi.object({
@@ -21,28 +21,10 @@ export const validateSignup = async (req, res, next) => {
   }
 };
 
-export const validateExistingPassenger = async (req, res, next) => {
+export const validateExistingUser = async (req, res, next) => {
   const { email } = req.body;
   try {
-    const validateEmail = await passengerModel.select(
-      '*',
-      ` WHERE "email"= '${email}'`
-    );
-    if (validateEmail.rowCount) {
-      return res
-        .status(400)
-        .json({ message: 'User already exist', success: false });
-    }
-    next();
-  } catch (error) {
-    return res.status(500).json({ message: error.message, success: false });
-  }
-};
-
-export const validateExistingDriver = async (req, res, next) => {
-  const { email } = req.body;
-  try {
-    const validateEmail = await driverModel.select(
+    const validateEmail = await userModel.select(
       '*',
       ` WHERE "email"= '${email}'`
     );
