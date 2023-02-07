@@ -1,7 +1,6 @@
 import passport from 'passport';
 import dotenv from 'dotenv';
 import { userModel, userTypes } from '../controllers';
-import assignToken from './assignToken';
 
 dotenv.config();
 
@@ -33,7 +32,9 @@ passport.use(
           const columns = `first_name, last_name, email, user_type, profile_pic`;
           const values = `'${firstName}', '${lastName}', '${email}', '${userType}', '${profilePic}'`;
           const addUser = await userModel.insertWithReturn(columns, values);
+          const { user_details_id: userId } = addUser.rows[0];
           userInfo = {
+            userId,
             firstName,
             lastName,
             email,
@@ -42,6 +43,7 @@ passport.use(
           };
         } else {
           userInfo = {
+            userId: currentUser.rows[0].user_details_id,
             firstName: currentUser.rows[0].first_name,
             lastName: currentUser.rows[0].last_name,
             email: currentUser.rows[0].email,

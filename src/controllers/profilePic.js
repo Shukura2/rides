@@ -15,11 +15,12 @@ export const uploadProfilePic = async (req, res) => {
         message: 'File successfully uploaded',
         success: true,
       });
+    } else {
+      return res.status(400).json({
+        message: 'No file added',
+        success: false,
+      });
     }
-    return res.status(400).json({
-      message: 'No file added',
-      success: false,
-    });
   } catch (error) {
     return res.status(500).json({
       message: 'something went wrong while processing your request',

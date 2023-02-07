@@ -30,7 +30,7 @@ authRouter.get(
   '/google/callback',
   passport.authenticate('google', {
     successRedirect: '/v1/auth/success',
-    failureRedirect: '/v1/auth/failure',
+    failureRedirect: '/v1/auth/login',
   })
 );
 
@@ -40,13 +40,6 @@ authRouter.get('/success', (req, res) => {
     message: 'Login Successfully',
     userInfo: req.user,
     success: true,
-  });
-});
-
-authRouter.get('/failure', (req, res) => {
-  res.status(200).json({
-    message: 'Something went wrong',
-    success: false,
   });
 });
 

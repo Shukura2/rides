@@ -13,7 +13,6 @@ export const editRideOffer = async (req, res) => {
       .status(200)
       .json({ message: 'Offer updated successfully', success: true });
   } catch (error) {
-    console.log('error = ', error);
     res.status(500).json({ message: error.message, success: false });
   }
 };
