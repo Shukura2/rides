@@ -34,11 +34,20 @@ export const addRide = async (req, res) => {
 };
 
 export const getAllOffers = async (req, res) => {
+  const { page, size } = req.query;
   const columns = '*';
-  const clause = `FETCH FIRST 3 ROW ONLY`;
+  const clause = `OFFSET ${page} LIMIT ${size}`;
+
   try {
     const data = await rideOfferModel.select(columns, clause);
-    res.status(200).json({ message: data.rows, success: true });
+    const totalSize = await rideOfferModel.select('*');
+    res.status(200).json({
+      message: data.rows,
+      success: true,
+      page,
+      size,
+      totalSize: totalSize.rows.length,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }
