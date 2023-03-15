@@ -13,7 +13,7 @@ import { isLoggedIn } from '../../middlewares';
 const userRouter = express.Router();
 
 const storage = multer.memoryStorage();
-const maxSize = 1000000 * 1000;
+const maxSize = 3000 * 1000;
 
 export const uploads = multer({ storage, limits: { fileSize: maxSize } });
 

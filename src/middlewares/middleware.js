@@ -47,6 +47,7 @@ export const isLoggedIn = async (req, res, next) => {
       [, tokenValue] = token.split(' ');
       const userData = jwt.verify(tokenValue, process.env.SECRET_KEY);
       req.user = userData;
+      req.token=token.split(' ')[1]
       if (userData) {
         next();
       } else {

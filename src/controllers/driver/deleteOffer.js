@@ -10,6 +10,11 @@ export const deleteOffer = async (req, res) => {
     const data = await deleteOfferModel.deleteFromTable(clause);
     res.status(200).json({ message: 'Ride offer deleted', success: true });
   } catch (error) {
-    res.status(500).json({ message: error.message, success: false });
+    res
+      .status(500)
+      .json({
+        message: "Passenger joined already, offer can't be deleted",
+        success: false,
+      });
   }
 };

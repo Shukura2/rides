@@ -32,7 +32,6 @@ export const resetPassword = async (req, res) => {
     sendEmail(email, title, content);
     return res.status(200).json({
       message: 'We have sent a password reset instructions to your email',
-      token,
       success: true,
     });
   } catch (error) {

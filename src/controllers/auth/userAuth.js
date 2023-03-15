@@ -12,12 +12,27 @@ export const userTypes = {
 export const createPassenger = async (req, res) => {
   let userType = userTypes.PASSENGER;
   const { firstName, lastName, password, email } = req.body;
+
   const columns = `first_name, last_name, password, email, user_type`;
   const values = `'${firstName}', '${lastName}', '${password}', '${email}', '${userType}'`;
+
   try {
     const data = await userModel.insertWithReturn(columns, values);
     const { user_details_id: userId } = data.rows[0];
-    const userInfo = { userId, firstName, lastName, email, userType };
+    const userData = `phone_number, profile_pic`;
+    const userClause = `WHERE user_details_id = '${userId}'`;
+    const userDetails = await userModel.select(userData, userClause);
+    const { phone_number: phoneNumber, profile_pic: profilePic } =
+      userDetails.rows[0];
+    const userInfo = {
+      userId,
+      firstName,
+      lastName,
+      email,
+      userType,
+      phoneNumber,
+      profilePic,
+    };
     const token = assignToken(userInfo);
     res.status(200).json({
       message: 'Register successfully',
@@ -38,7 +53,20 @@ export const createDriver = async (req, res) => {
   try {
     const data = await userModel.insertWithReturn(columns, values);
     const { user_details_id: userId } = data.rows[0];
-    const userInfo = { userId, firstName, lastName, email, userType };
+    const userData = `phone_number, profile_pic`;
+    const userClause = `WHERE user_details_id = '${userId}'`;
+    const userDetails = await userModel.select(userData, userClause);
+    const { phone_number: phoneNumber, profile_pic: profilePic } =
+      userDetails.rows[0];
+    const userInfo = {
+      userId,
+      firstName,
+      lastName,
+      email,
+      userType,
+      phoneNumber,
+      profilePic,
+    };
     const token = assignToken(userInfo);
     res.status(200).json({
       message: 'Register successfully',
@@ -77,12 +105,23 @@ export const loginUser = async (req, res) => {
       first_name: firstName,
       last_name: lastName,
       user_type: userType,
+      phone_number: phoneNumber,
+      profile_pic: profilePic,
     } = validateEmail.rows[0];
-    const userInfo = { userId, firstName, lastName, email, userType };
+    const userInfo = {
+      userId,
+      firstName,
+      lastName,
+      email,
+      userType,
+      phoneNumber,
+      profilePic,
+    };
     const token = assignToken(userInfo);
     return res
       .status(200)
-      .json({ message: 'Login Successfully', userInfo, token, success: true });
+      .json({ message: 'Login Successfully', userInfo, 
+      token, success: true });
   } catch (error) {
     return res.status(500).json({ message: error.message, success: false });
   }

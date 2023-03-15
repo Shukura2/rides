@@ -52,3 +52,15 @@ export const getAllOffers = async (req, res) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
+export const getMyOffer = async (req, res) => {
+  try {
+    const { userId } = req.user.userInfo;
+    const column = `ride_offer_id, location, destination, amount, created_at, status`;
+    const clause = `WHERE driver_id = '${userId}'`;
+    const data = await rideOfferModel.select(column, clause);
+    return res.status(200).json({ message: data.rows, success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
