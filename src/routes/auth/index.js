@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import { createPassenger, createDriver, loginUser } from '../../controllers';
 import { validateExistingUser, validateSignup } from '../../middlewares';
+import assignToken from '../../utils/assignToken';
 
 const authRouter = express.Router();
 
@@ -35,12 +36,15 @@ authRouter.get(
 );
 
 authRouter.get('/success', (req, res) => {
-  console.log('req user = ', req.user);
-  res.status(200).json({
-    message: 'Login Successfully',
-    userInfo: req.user,
-    success: true,
-  });
+  if (req.user) {
+    const token = assignToken(req.user);
+    res.status(200).json({
+      message: 'Login Successfully',
+      userInfo: req.user,
+      token: token,
+      success: true,
+    });
+  }
 });
 
 export default authRouter;
