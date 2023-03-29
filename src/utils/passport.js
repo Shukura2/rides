@@ -1,7 +1,6 @@
 import passport from 'passport';
 import dotenv from 'dotenv';
 import { userModel, userTypes } from '../controllers';
-import assignToken from './assignToken';
 
 dotenv.config();
 

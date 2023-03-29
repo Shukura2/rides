@@ -120,8 +120,7 @@ export const loginUser = async (req, res) => {
     const token = assignToken(userInfo);
     return res
       .status(200)
-      .json({ message: 'Login Successfully', userInfo, 
-      token, success: true });
+      .json({ message: 'Login Successfully', userInfo, token, success: true });
   } catch (error) {
     return res.status(500).json({ message: error.message, success: false });
   }
